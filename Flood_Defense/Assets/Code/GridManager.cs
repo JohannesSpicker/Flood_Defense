@@ -61,13 +61,15 @@ public class GridManager : MonoBehaviour
 
 	private PlayerController player;
 	private SpriteRenderer[,] tileSprites;
-	private UiController uiController;
+	public UiController uiController;
+	private AudioSource audioWave;
 	[HideInInspector] public int vertical, horizontal, columns, rows;
 
 	// Start is called before the first frame update
 	void Start()
 	{
 		player = GameObject.FindGameObjectWithTag("Player")?.GetComponent<PlayerController>();
+		audioWave = GetComponent<AudioSource>();
 		vertical = (int)Camera.main.orthographicSize;
 		horizontal = vertical * (Screen.width / Screen.height);
 		/*
@@ -86,12 +88,17 @@ public class GridManager : MonoBehaviour
 			for (int j = 0; j < rows; j++)
 			{
 				fields[i, j] = new Field(createSpriteType(i, j));
+				//fields[i, j] = new Field(0);
 				fields[i, j].groundHeight = Mathf.Clamp(fields[i, j].groundHeight, -1, 1);
-				fields[i, j].waterHeight = Random.Range(0, 2);
+				//fields[i, j].waterHeight = Random.Range(0, 2);
+				if (fields[i, j].groundHeight < 1)
+					fields[i, j].waterHeight = Random.Range(0f, 2f) < 0.3f ? 1 : 0;
+				else
+					fields[i, j].waterHeight = 0;
 
 				if (fields[i, j].waterHeight == 0 && fields[i, j].groundHeight == 0)
 				{
-					fields[i, j].hasVillage = true;
+					fields[i, j].hasVillage = Random.Range(0f, 2f) < 0.3f;
 					player.villages++;
 					player.villagesMax++;
 				}
@@ -308,28 +315,28 @@ public class GridManager : MonoBehaviour
 						Vector3Int bestTarget = new Vector3Int(-2, -2, 5);
 						//go through the 4 possible targets and check for the best one with EvaluateFLowTarget()
 
-						int score = EvaluateFlowTarget(-1, 0, fields[i, j].combinedHeight);
+						int score = EvaluateFlowTarget(i + -1, j + 0, fields[i, j].combinedHeight);
 						if (score < bestTarget.z)
 						{
-							bestTarget = new Vector3Int(-1, 0, score);
+							bestTarget = new Vector3Int(i + -1, j + 0, score);
 						}
 
-						score = EvaluateFlowTarget(1, 0, fields[i, j].combinedHeight);
+						score = EvaluateFlowTarget(i + 1, j + 0, fields[i, j].combinedHeight);
 						if (score < bestTarget.z)
 						{
-							bestTarget = new Vector3Int(1, 0, score);
+							bestTarget = new Vector3Int(i + 1, j + 0, score);
 						}
 
-						score = EvaluateFlowTarget(0, -1, fields[i, j].combinedHeight);
+						score = EvaluateFlowTarget(i + 0, j + -1, fields[i, j].combinedHeight);
 						if (score < bestTarget.z)
 						{
-							bestTarget = new Vector3Int(0, -1, score);
+							bestTarget = new Vector3Int(i + 0, j + -1, score);
 						}
 
-						score = EvaluateFlowTarget(0, 1, fields[i, j].combinedHeight);
+						score = EvaluateFlowTarget(i + 0, j + 1, fields[i, j].combinedHeight);
 						if (score < bestTarget.z)
 						{
-							bestTarget = new Vector3Int(0, 1, score);
+							bestTarget = new Vector3Int(i + 0, j + 1, score);
 						}
 
 						if (bestTarget.z < 0)
@@ -369,8 +376,13 @@ public class GridManager : MonoBehaviour
 	{
 		while (true)
 		{
+
+			yield return new WaitForSeconds(5f);
+
 			CombinedWaterflow();
-			yield return new WaitForSeconds(1f);
+			audioWave.PlayOneShot(audioWave.clip);
+
+			//yield return new WaitForSeconds(1f);
 		}
 	}
 	#endregion
