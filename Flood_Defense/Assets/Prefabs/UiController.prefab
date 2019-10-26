@@ -46,4 +46,5 @@ MonoBehaviour:
   resourceObject: {fileID: 0}
   villagesSavedObject: {fileID: 0}
   panelUI: {fileID: 0}
-  panelOutro: {fileID: 0}
+  panelOutroLose: {fileID: 0}
+  panelOutroWin: {fileID: 0}

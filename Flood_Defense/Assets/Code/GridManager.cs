@@ -61,6 +61,7 @@ public class GridManager : MonoBehaviour
 
 	private PlayerController player;
 	private SpriteRenderer[,] tileSprites;
+	private UiController uiController;
 	[HideInInspector] public int vertical, horizontal, columns, rows;
 
 	// Start is called before the first frame update
@@ -238,13 +239,6 @@ public class GridManager : MonoBehaviour
 		int groundheight = Random.Range(minHeight, maxHeight);
 
 		return groundheight;
-
-
-
-		//i-1, j-1
-
-
-
 	}
 
 	public bool Dig(int x, int y)
@@ -361,6 +355,8 @@ public class GridManager : MonoBehaviour
 					{
 						fields[i, j].hasVillage = false;
 						player.villages--;
+						if (player.villages == 0)
+							uiController.SetPanelLose();
 					}
 
 					UpdateSprite(i, j);

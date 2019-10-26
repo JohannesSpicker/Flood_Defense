@@ -14,7 +14,8 @@ public class UiController : MonoBehaviour
 	private PlayerController player;
 
 	[SerializeField] private GameObject panelUI;
-	[SerializeField] private GameObject panelOutro;
+	[SerializeField] private GameObject panelOutroLose;
+	[SerializeField] private GameObject panelOutroWin;
 
 	// Start is called before the first frame update
 	void Start()
@@ -24,7 +25,7 @@ public class UiController : MonoBehaviour
 		player = FindObjectOfType<PlayerController>();
 
 		//resourceObject.SetActive(false);
-		SetPanelUI();		
+		SetPanelUI();
 	}
 
 	// Update is called once per frame
@@ -58,14 +59,23 @@ public class UiController : MonoBehaviour
 	public void SetPanelUI()
 	{
 		panelUI.SetActive(true);
-		panelOutro.SetActive(false);
+		panelOutroLose.SetActive(false);
+		panelOutroWin.SetActive(false);
 	}
 
-	public void SetPanelOutro()
+	public void SetPanelWin()
 	{
 		panelUI.SetActive(false);
-		panelOutro.SetActive(true);
+		panelOutroLose.SetActive(false);
+		panelOutroWin.SetActive(true);
 
 		SetVillageUI();
+	}
+
+	public void SetPanelLose()
+	{
+		panelUI.SetActive(false);
+		panelOutroLose.SetActive(true);
+		panelOutroWin.SetActive(false);
 	}
 }
