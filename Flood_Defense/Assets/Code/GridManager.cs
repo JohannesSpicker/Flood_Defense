@@ -61,7 +61,7 @@ public class GridManager : MonoBehaviour
 
 	private PlayerController player;
 	private SpriteRenderer[,] tileSprites;
-	private int vertical, horizontal, columns, rows;
+	[HideInInspector] public int vertical, horizontal, columns, rows;
 
 	// Start is called before the first frame update
 	void Start()
