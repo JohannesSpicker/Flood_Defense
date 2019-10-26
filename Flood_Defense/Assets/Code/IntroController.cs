@@ -30,7 +30,7 @@ public class IntroController : MonoBehaviour
 
 	private void SetSprite(int i)
 	{
-		if (sprites[i] != null)
+		if (i < sprites.Length)
 			image.sprite = sprites[i];
 		else
 			SceneManager.LoadScene(1);
