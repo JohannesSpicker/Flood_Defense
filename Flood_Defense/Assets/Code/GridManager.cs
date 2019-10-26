@@ -63,6 +63,7 @@ public class GridManager : MonoBehaviour
 	private SpriteRenderer[,] tileSprites;
 	public UiController uiController;
 	private AudioSource audioWave;
+	private MapGenerator mapGenerator;
 	[HideInInspector] public int vertical, horizontal, columns, rows;
 
 	// Start is called before the first frame update
@@ -70,6 +71,7 @@ public class GridManager : MonoBehaviour
 	{
 		player = GameObject.FindGameObjectWithTag("Player")?.GetComponent<PlayerController>();
 		audioWave = GetComponent<AudioSource>();
+		mapGenerator = GetComponent<MapGenerator>();
 		vertical = (int)Camera.main.orthographicSize;
 		horizontal = vertical * (Screen.width / Screen.height);
 		/*
@@ -87,21 +89,41 @@ public class GridManager : MonoBehaviour
 		{
 			for (int j = 0; j < rows; j++)
 			{
-				fields[i, j] = new Field(createSpriteType(i, j));
-				//fields[i, j] = new Field(0);
-				fields[i, j].groundHeight = Mathf.Clamp(fields[i, j].groundHeight, -1, 1);
-				//fields[i, j].waterHeight = Random.Range(0, 2);
-				if (fields[i, j].groundHeight < 1)
-					fields[i, j].waterHeight = Random.Range(0f, 2f) < 0.3f ? 1 : 0;
-				else
-					fields[i, j].waterHeight = 0;
-
-				if (fields[i, j].waterHeight == 0 && fields[i, j].groundHeight == 0)
+				fields[i, j] = new Field(0);
+				//groundheight
+				fields[i, j].groundHeight = mapGenerator.field[i, j];
+				//village
+				if (fields[i, j].groundHeight == 9)
 				{
-					fields[i, j].hasVillage = Random.Range(0f, 2f) < 0.3f;
+					fields[i, j].groundHeight = 0;
+					fields[i, j].hasVillage = true;
 					player.villages++;
 					player.villagesMax++;
 				}
+				//waterheight
+				if (i == 0 && fields[i, j].groundHeight == -1)
+					fields[i, j].waterHeight = 1;
+
+					/*
+					fields[i, j] = new Field(createSpriteType(i, j));
+					//fields[i, j] = new Field(0);
+					fields[i, j].groundHeight = Mathf.Clamp(fields[i, j].groundHeight, -1, 1);
+					//fields[i, j].waterHeight = Random.Range(0, 2);
+					if (fields[i, j].groundHeight < 1)
+						fields[i, j].waterHeight = Random.Range(0f, 2f) < 0.3f ? 1 : 0;
+					else
+						fields[i, j].waterHeight = 0;
+
+					if (fields[i, j].waterHeight == 0 && fields[i, j].groundHeight == 0)
+					{
+						fields[i, j].hasVillage = Random.Range(0f, 2f) < 0.3f;
+						if (fields[i, j].hasVillage)
+						{
+							player.villages++;
+							player.villagesMax++;
+						}
+					}
+					*/
 
 				SpawnTile(i, j, fields[i, j].getSpriteType());
 				UpdateSprite(i, j);
@@ -348,6 +370,8 @@ public class GridManager : MonoBehaviour
 			}
 		}
 
+		bool gameWon = true;
+
 		//actually adding the water
 		for (int i = 0; i < xMax; i++)
 		{
@@ -355,6 +379,8 @@ public class GridManager : MonoBehaviour
 			{
 				if (addedWater[i, j] == 1)
 				{
+					gameWon = false;
+
 					if (fields[i, j].waterHeight < 5)
 						fields[i, j].waterHeight++;
 
@@ -370,6 +396,9 @@ public class GridManager : MonoBehaviour
 				}
 			}
 		}
+
+		if (gameWon)
+			uiController.SetPanelWin();
 	}
 
 	private IEnumerator WaterflowLoop()

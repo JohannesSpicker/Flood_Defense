@@ -39,7 +39,7 @@ public class PlayerInput : MonoBehaviour
 
 	private void ChangeActiveTile(int x, int y)
 	{
-		if (x < 0 || y < 0 || gridManager.columns < x || gridManager.rows < y)
+		if (x < 0 || y < 0 || gridManager.columns <= x || gridManager.rows <= y)
 			return;
 
 		activeTile = new Vector2Int(x, y);
