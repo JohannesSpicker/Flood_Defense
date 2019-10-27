@@ -9,12 +9,14 @@ public class IntroController : MonoBehaviour
 	public Sprite[] sprites;
 	public Image image;
 	private int currentSprite;
+    public static bool gameWon;
 
     // Start is called before the first frame update
     void Start()
     {
 		SetSprite(0);
 		currentSprite = 0;
+        gameWon = false;
     }
 
     // Update is called once per frame
