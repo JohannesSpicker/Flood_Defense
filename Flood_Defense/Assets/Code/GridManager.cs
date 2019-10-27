@@ -106,27 +106,6 @@ public class GridManager : MonoBehaviour
                 if (i == 0 && fields[i, j].groundHeight == -1)
                     fields[i, j].waterHeight = 1;
 
-                /*
-                fields[i, j] = new Field(createSpriteType(i, j));
-                //fields[i, j] = new Field(0);
-                fields[i, j].groundHeight = Mathf.Clamp(fields[i, j].groundHeight, -1, 1);
-                //fields[i, j].waterHeight = Random.Range(0, 2);
-                if (fields[i, j].groundHeight < 1)
-                    fields[i, j].waterHeight = Random.Range(0f, 2f) < 0.3f ? 1 : 0;
-                else
-                    fields[i, j].waterHeight = 0;
-
-                if (fields[i, j].waterHeight == 0 && fields[i, j].groundHeight == 0)
-                {
-                    fields[i, j].hasVillage = Random.Range(0f, 2f) < 0.3f;
-                    if (fields[i, j].hasVillage)
-                    {
-                        player.villages++;
-                        player.villagesMax++;
-                    }
-                }
-                */
-
                 SpawnTile(i, j, fields[i, j].getSpriteType());
                 UpdateSprite(i, j);
             }
@@ -171,105 +150,6 @@ public class GridManager : MonoBehaviour
             int temp = 1 + Mathf.Clamp(fields[x, y].groundHeight, -1, 1);
             tileSprites[x, y].sprite = mySprites[temp];
         }
-    }
-
-    public int createSpriteType(int i, int j)
-    {
-        int minHeight = 0;
-        int maxHeight = 0;
-
-        if ((i > 0 && i < horizontal) && (j > 0 && j < vertical))
-        {
-            if (fields[i - 1, j - 1] != null)
-            {
-                maxHeight = minHeight = fields[i - 1, j - 1].getCombinedHeight();
-            }
-            else
-            {
-                maxHeight = 2;
-                minHeight = -2;
-            }
-
-            //i-1, j
-            if (fields[i - 1, j] != null && fields[i - 1, j].getCombinedHeight() > maxHeight)
-            {
-                maxHeight = fields[i - 1, j].getCombinedHeight();
-            }
-            else if (fields[i - 1, j] != null && fields[i - 1, j].getCombinedHeight() < minHeight)
-            {
-                minHeight = fields[i - 1, j].getCombinedHeight();
-            }
-
-            //i-1, j+1
-            if (fields[i, j + 1] != null && fields[i, j + 1].getCombinedHeight() > maxHeight)
-            {
-                maxHeight = fields[i, j + 1].getCombinedHeight();
-            }
-            else if (fields[i, j + 1] != null && fields[i, j + 1].getCombinedHeight() < minHeight)
-            {
-                minHeight = fields[i, j + 1].getCombinedHeight();
-            }
-
-            //i, j-1
-            if (fields[i, j - 1] != null && fields[i, j - 1].getCombinedHeight() > maxHeight)
-            {
-                maxHeight = fields[i, j - 1].getCombinedHeight();
-            }
-            else if (fields[i, j - 1] != null && fields[i, j - 1].getCombinedHeight() < minHeight)
-            {
-                minHeight = fields[i, j - 1].getCombinedHeight();
-            }
-
-            //i, j+1
-            if (fields[i, j + 1] != null && fields[i, j + 1].getCombinedHeight() > maxHeight)
-            {
-                maxHeight = fields[i - 1, j].getCombinedHeight();
-            }
-            else if (fields[i, j + 1] != null && fields[i, j + 1].getCombinedHeight() < minHeight)
-            {
-                minHeight = fields[i, j + 1].getCombinedHeight();
-            }
-
-            //i+1, j-1
-            if (fields[i + 1, j - 1] != null)
-            {
-                maxHeight = fields[i + 1, j - 1].getCombinedHeight();
-            }
-            else if (fields[i + 1, j - 1] != null && fields[i + 1, j - 1].getCombinedHeight() < minHeight)
-            {
-                minHeight = fields[i + 1, j - 1].getCombinedHeight();
-            }
-
-            //i+1, j
-            if (fields[i + 1, j] != null && fields[i + 1, j].getCombinedHeight() > maxHeight)
-            {
-                maxHeight = fields[i + 1, j].getCombinedHeight();
-            }
-            else if (fields[i + 1, j] != null && fields[i + 1, j].getCombinedHeight() < minHeight)
-            {
-                minHeight = fields[i + 1, j].getCombinedHeight();
-            }
-
-            //i+1, j+1
-            if (fields[i + 1, j + 1] != null && fields[i + 1, j + 1].getCombinedHeight() > maxHeight)
-            {
-                maxHeight = fields[i, j + 1].getCombinedHeight();
-            }
-            else if (fields[i + 1, j + 1] != null && fields[i + 1, j + 1].getCombinedHeight() < minHeight)
-            {
-                minHeight = fields[i + 1, j + 1].getCombinedHeight();
-            }
-
-        }
-        else
-        {
-            maxHeight = 2;
-            minHeight = -2;
-        }
-
-        int groundheight = Random.Range(minHeight, maxHeight);
-
-        return groundheight;
     }
 
     public bool Dig(int x, int y)
@@ -428,21 +308,19 @@ public class GridManager : MonoBehaviour
             IntroController.gameWon = true;
             uiController.SetPanelWin();
         }
-           
-        
+
+
     }
 
     private IEnumerator WaterflowLoop()
     {
-        while (!IntroController.gameWon || player.villages == 0)
+        while (player.villages > 0 && !IntroController.gameWon)
         {
 
             yield return new WaitForSeconds(5f);
 
             CombinedWaterflow();
             audioWave.PlayOneShot(audioWave.clip);
-
-            //yield return new WaitForSeconds(1f);
         }
     }
     #endregion
